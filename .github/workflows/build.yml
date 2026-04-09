@@ -1,0 +1,53 @@
+name: Build EXE + Setup
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.10"
+
+    - name: Install dependencies
+      run: |
+        pip install pyinstaller PyQt5 reportlab
+
+    - name: Build EXE
+      run: |
+        pyinstaller --onefile --windowed ^
+        --add-data "assets/sounds;sounds" ^
+        --name TypingTrainer ^
+        src/main.py
+
+    # Install Inno Setup
+    - name: Install Inno Setup
+      run: |
+        choco install innosetup -y
+
+    # Build Setup.exe
+    - name: Create Installer
+      run: |
+        iscc installer\setup.iss
+
+    # Upload EXE
+    - name: Upload EXE
+      uses: actions/upload-artifact@v4
+      with:
+        name: TypingTrainer-EXE
+        path: dist/TypingTrainer.exe
+
+    # Upload Setup
+    - name: Upload Setup
+      uses: actions/upload-artifact@v4
+      with:
+        name: TypingTrainer-Setup
+        path: installer/output/DSTypingTrainer_Setup.exe
