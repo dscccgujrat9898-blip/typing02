@@ -21,17 +21,19 @@ jobs:
       run: |
         pip install pyinstaller PyQt5 reportlab
 
+    # ✅ FIXED EXE BUILD (PowerShell compatible)
     - name: Build EXE
       run: |
-        pyinstaller --onefile --windowed ^
-        --add-data "assets/sounds;sounds" ^
-        --name TypingTrainer ^
-        src/main.py
+        pyinstaller `
+          --onefile `
+          --windowed `
+          --add-data "assets/sounds;sounds" `
+          --name TypingTrainer `
+          src/main.py
 
     # Install Inno Setup
     - name: Install Inno Setup
-      run: |
-        choco install innosetup -y
+      run: choco install innosetup -y
 
     # Build Setup.exe
     - name: Create Installer
@@ -45,7 +47,7 @@ jobs:
         name: TypingTrainer-EXE
         path: dist/TypingTrainer.exe
 
-    # Upload Setup
+    # Upload Setup.exe
     - name: Upload Setup
       uses: actions/upload-artifact@v4
       with:
